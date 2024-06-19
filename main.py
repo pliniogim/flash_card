@@ -2,21 +2,26 @@ from tkinter import *
 from util import *
 import pandas
 import random
-import datetime
 
-current_card = {}
 BACKGROUND_COLOR = "#B1DDC6"
 
+current_card = {}
+to_learn = {}
 
-data = pandas.read_csv("data/french_words.csv")
-to_learn = pandas.DataFrame.to_dict(data, orient="records")
+try:
+    data = pandas.read_csv("data/words_to_learn.csv")
+except FileNotFoundError:
+    original_data = pandas.read_csv("data/french_words.csv")
+    to_learn = original_data.to_dict(orient="records")
+else:
+    to_learn = data.to_dict(orient="records")
 
 
 def flip_card():
     global current_card
-    canvas.itemconfig(card_title, text="English", fill="green")
-    canvas.itemconfig(card_word, text=current_card["English"], fill="green")
-    canvas.itemconfig(cv_card_back, image=card_background)
+    canvas.itemconfig(card_title, text="English", fill="white")
+    canvas.itemconfig(card_word, text=current_card["English"], fill="white")
+    canvas.itemconfig(cd_background, image=card_back_image)
 
 
 def process_w():
@@ -25,10 +30,15 @@ def process_w():
     current_card = random.choice(to_learn)
     canvas.itemconfig(card_title, text="French", fill="black")
     canvas.itemconfig(card_word, text=current_card["French"], fill="black")
-    card_front = PhotoImage(data=CARD_FRONT)
-    cv_card_front = canvas.create_image(400, 263, image=card_front)
-    canvas.itemconfig(cv_card_front, image=card_front)
+    canvas.itemconfig(cd_background, image=card_front_image)
     timer_clc = screen.after(3000, func=flip_card)
+
+
+def is_known():
+    to_learn.remove(current_card)
+    data = pandas.DataFrame(to_learn)
+    data.to_csv("data/words_to_learn.csv", index=False)
+    process_w()
 
 
 # screen section
@@ -40,8 +50,9 @@ timer_clc = screen.after(3000, func=flip_card)
 # canvas section
 canvas = Canvas(bg=BACKGROUND_COLOR, width=800, height=526, highlightthickness=0)
 
-card_background = PhotoImage(data=CARD_BACK)
-cv_card_back = canvas.create_image(400, 263, image=card_background)
+card_front_image = PhotoImage(data=CARD_FRONT)
+card_back_image = PhotoImage(data=CARD_BACK)
+cd_background = canvas.create_image(400, 263, image=card_back_image)
 
 card_title = canvas.create_text(400, 150, text="", font=("Arial", 40, "italic"))
 card_word = canvas.create_text(400, 263, text="", font=("Arial", 60, "bold"))
@@ -50,7 +61,7 @@ canvas.grid(row=0, column=0, columnspan=2, sticky="EW")
 # button section
 # right button
 r_button_img = PhotoImage(data=BUTTON_RIGHT)
-r_button = Button(image=r_button_img, highlightthickness=0, bg=BACKGROUND_COLOR, command=process_w)
+r_button = Button(image=r_button_img, highlightthickness=0, bg=BACKGROUND_COLOR, command=is_known)
 
 # wrong button
 w_button_img = PhotoImage(data=BUTTON_WRONG)
