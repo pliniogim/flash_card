@@ -7,18 +7,7 @@ BUTTON_WRONG: bytes = b'iVBORw0KGgoAAAANSUhEUgAAAGQAAABjCAIAAADihTK7AAABgGlDQ1Bz
 
 
 # def convert():
-#     with open("card_back.png", "rb") as imageFile:
+#     with open("images/card_front.png", "rb") as imageFile:
 #         photo_str = base64.b64encode(imageFile.read())
 #     print(photo_str)
-#     with open("card_front.png", "rb") as imageFile:
-#         photo1_str = base64.b64encode(imageFile.read())
-#     print(photo1_str)
-#     with open("right.png", "rb") as imageFile:
-#         right_str = base64.b64encode(imageFile.read())
-#     print(right_str)
-#     with open("wrong.png", "rb") as imageFile:
-#         wrong_str = base64.b64encode(imageFile.read())
-#     print(wrong_str)
-#
-#
 # convert()
