@@ -18,27 +18,35 @@ else:
 
 
 def flip_card():
-    global current_card
+    global current_card, timer_clc
+    screen.after_cancel(timer_clc)
     canvas.itemconfig(card_title, text="English", fill="white")
     canvas.itemconfig(card_word, text=current_card["English"], fill="white")
     canvas.itemconfig(cd_background, image=card_back_image)
+    timer_clc = screen.after(3000, func=process_w)
 
 
 def process_w():
     global current_card, timer_clc
     screen.after_cancel(timer_clc)
-    current_card = random.choice(to_learn)
     canvas.itemconfig(card_title, text="French", fill="black")
     canvas.itemconfig(card_word, text=current_card["French"], fill="black")
     canvas.itemconfig(cd_background, image=card_front_image)
     timer_clc = screen.after(3000, func=flip_card)
 
 
+def next_card():
+    global current_card
+    current_card = random.choice(to_learn)
+    process_w()
+
+
 def is_known():
+    global current_card
     to_learn.remove(current_card)
     data = pandas.DataFrame(to_learn)
     data.to_csv("data/words_to_learn.csv", index=False)
-    process_w()
+    next_card()
 
 
 # screen section
@@ -65,11 +73,11 @@ r_button = Button(image=r_button_img, highlightthickness=0, bg=BACKGROUND_COLOR,
 
 # wrong button
 w_button_img = PhotoImage(data=BUTTON_WRONG)
-w_button = Button(image=w_button_img, highlightthickness=0, bg=BACKGROUND_COLOR, command=process_w)
+w_button = Button(image=w_button_img, highlightthickness=0, bg=BACKGROUND_COLOR, command=next_card)
 
 w_button.grid(row=1, column=0)
 r_button.grid(row=1, column=1)
 
-process_w()
+next_card()
 
 screen.mainloop()
